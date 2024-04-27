@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -38,6 +38,13 @@ async function run() {
         res.send(result);
     })
 
+   
+    app.get('/users/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    })
 
     app.get('/artcraft/:email', async(req, res) => {
       console.log(req.params.email)
@@ -45,7 +52,6 @@ async function run() {
      console.log(result)
       res.send(result)
     })
-
 
     app.post('/users', async(req, res) =>{
         const newUser = req.body;
@@ -55,17 +61,43 @@ async function run() {
     })
 
 
+    app.put('/users/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+      const updatedItem = req.body;
+      const item = {
+        $set: {
+          item: updatedItem.item,
+           subcategory: updatedItem.subcategory,
+           description: updatedItem.description,
+           image: updatedItem.image,
+            price: updatedItem.price,
+            rating: updatedItem.rating, 
+            processing: updatedItem.processing, 
+            customization: updatedItem.customization,
+             stock: updatedItem.stock
+        }
+      }
+      const result = await usersCollection.updateOne(filter, item, options)
+      res.send(result)
+    })
+
+    app.delete('/users/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.log);
-
-
 
 
 app.get('/', (req, res) => {
