@@ -38,6 +38,15 @@ async function run() {
         res.send(result);
     })
 
+
+    app.get('/artcraft/:email', async(req, res) => {
+      console.log(req.params.email)
+      const result = await usersCollection.find({email:req.params.email}).toArray();
+     console.log(result)
+      res.send(result)
+    })
+
+
     app.post('/users', async(req, res) =>{
         const newUser = req.body;
         console.log(newUser);
