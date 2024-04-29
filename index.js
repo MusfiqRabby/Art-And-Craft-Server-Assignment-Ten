@@ -30,20 +30,13 @@ async function run() {
     await client.connect();
 
     const usersCollection = client.db('usersDB').collection('users');
-    const artcraftCollection = client.db('artcraftDB').collection('artcraft')
+    // const artcraftCollection = client.db('artcraftDB').collection('artcraft')
 
     app.get('/users', async(req, res) => {
         const cursor = usersCollection.find();
         const result = await cursor.toArray();
         res.send(result);
     })
-
-    app.get('/artcraft', async(req, res) => {
-      const cursor = artcraftCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    })
-   
 
    
     app.get('/users/:id', async(req, res) =>{
@@ -61,7 +54,6 @@ async function run() {
       res.send(result);
     })
 
-
     
     app.get('/artcraft/:email', async(req, res) => {
       console.log(req.params.email)
@@ -76,13 +68,6 @@ async function run() {
         const result = await usersCollection.insertOne(newUser);
         res.send(result); 
     })
-
-    app.post('/artcraft', async(req, res) => {
-      const newArtCraft = req.body;
-      const result = await artcraftCollection.insertOne(newArtCraft);
-      res.send(result);
-    })
-
 
     app.put('/users/:id', async(req, res) => {
       const id = req.params.id;
