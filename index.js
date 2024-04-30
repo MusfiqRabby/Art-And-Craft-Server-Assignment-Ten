@@ -16,21 +16,22 @@ console.log(uri)
 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
+
+const client = new MongoClient(uri, { useUnifiedTopology: true}, { useNewUrlParser: true }, { connectTimeoutMS: 30000 }, { keepAlive: 1});
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
 
     const usersCollection = client.db('usersDB').collection('users');
-    // const artcraftCollection = client.db('artcraftDB').collection('artcraft')
+     const artcraftCollection = client.db('artcraftDB').collection('artcraft')
 
     app.get('/users', async(req, res) => {
         const cursor = usersCollection.find();
@@ -38,7 +39,6 @@ async function run() {
         res.send(result);
     })
 
-   
     app.get('/users/:id', async(req, res) =>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
@@ -51,13 +51,14 @@ async function run() {
       res.send(data)
       })
 
-      
+
     app.get('/users/:id', async(req, res) =>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await usersCollection.findOne(query);
       res.send(result);
     })
+
 
     
     app.get('/artcraft/:email', async(req, res) => {
@@ -105,7 +106,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
   }
